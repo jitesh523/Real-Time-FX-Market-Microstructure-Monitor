@@ -1,0 +1,139 @@
+"""Kubernetes deployment manifests."""
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: fx-monitor
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fx-monitor-config
+  namespace: fx-monitor
+data:
+  KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
+  CLICKHOUSE_HOST: "clickhouse"
+  CLICKHOUSE_PORT: "9000"
+  CLICKHOUSE_DATABASE: "fx_market"
+  CURRENCY_PAIRS: "EUR/USD,GBP/USD,USD/JPY,AUD/USD"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka
+  namespace: fx-monitor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka
+  template:
+    metadata:
+      labels:
+        app: kafka
+    spec:
+      containers:
+      - name: kafka
+        image: confluentinc/cp-kafka:latest
+        ports:
+        - containerPort: 9092
+        env:
+        - name: KAFKA_ZOOKEEPER_CONNECT
+          value: "zookeeper:2181"
+        - name: KAFKA_ADVERTISED_LISTENERS
+          value: "PLAINTEXT://kafka:9092"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka
+  namespace: fx-monitor
+spec:
+  selector:
+    app: kafka
+  ports:
+  - port: 9092
+    targetPort: 9092
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: clickhouse
+  namespace: fx-monitor
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: clickhouse
+  template:
+    metadata:
+      labels:
+        app: clickhouse
+    spec:
+      containers:
+      - name: clickhouse
+        image: clickhouse/clickhouse-server:latest
+        ports:
+        - containerPort: 8123
+        - containerPort: 9000
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: clickhouse
+  namespace: fx-monitor
+spec:
+  selector:
+    app: clickhouse
+  ports:
+  - name: http
+    port: 8123
+    targetPort: 8123
+  - name: native
+    port: 9000
+    targetPort: 9000
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dashboard
+  namespace: fx-monitor
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: dashboard
+  template:
+    metadata:
+      labels:
+        app: dashboard
+    spec:
+      containers:
+      - name: dashboard
+        image: fx-monitor:latest
+        command: ["streamlit", "run", "src/dashboard/app.py"]
+        ports:
+        - containerPort: 8501
+        envFrom:
+        - configMapRef:
+            name: fx-monitor-config
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dashboard
+  namespace: fx-monitor
+spec:
+  type: LoadBalancer
+  selector:
+    app: dashboard
+  ports:
+  - port: 80
+    targetPort: 8501
