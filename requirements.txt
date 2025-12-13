@@ -37,7 +37,7 @@ pytest-asyncio==0.21.1
 
 # Code Quality
 black==23.12.1
-pylint==3.0.3
+pylint==4.0.4
 mypy==1.7.1
 isort==5.13.2
 
