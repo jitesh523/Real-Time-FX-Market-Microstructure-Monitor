@@ -6,7 +6,7 @@ confluent-kafka==2.3.0
 
 # Database
 clickhouse-driver==0.2.6
-clickhouse-connect==0.6.23
+clickhouse-connect==0.10.0
 
 # Data Processing
 pandas==2.2.0
