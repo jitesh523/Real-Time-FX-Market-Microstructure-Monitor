@@ -49,6 +49,9 @@ class ZScoreDetector:
         std = np.std(self.values)
 
         if std == 0:
+            if value != mean:
+                # If std is 0 but value is different from mean, it's an extreme anomaly
+                return float('inf') if value > mean else float('-inf')
             return 0.0
 
         zscore = (value - mean) / std

@@ -99,7 +99,7 @@ class MarketMetrics(BaseModel):
     total_depth: float = Field(description="Total market depth")
 
     # Flow metrics
-    order_flow_imbalance: float = Field(description="Order flow imbalance")
+    order_flow_imbalance: Optional[float] = Field(default=None, description="Order flow imbalance")
 
     # Volatility metrics
     volatility: Optional[float] = Field(default=None, description="Realized volatility")
