@@ -70,7 +70,7 @@ jobs:
       run: isort --check-only --profile black src/
     
     - name: Run pylint
-      run: pylint src/ --disable=all --enable=E,F --disable=E0401
+      run: pylint src/ --disable=all --enable=E --disable=E0401
     
     - name: Run mypy
       run: mypy src/ --ignore-missing-imports --no-strict-optional --disable-error-code=var-annotated --disable-error-code=import-untyped

@@ -49,7 +49,7 @@ def test_get_current_spread(sample_ticks):
     
     current_spread = calc.get_current_spread()
     assert current_spread is not None
-    assert current_spread == 0.0002  # ask - bid
+    assert current_spread == pytest.approx(0.0002)  # ask - bid
 
 
 def test_get_average_spread(sample_ticks):
@@ -61,7 +61,7 @@ def test_get_average_spread(sample_ticks):
     
     avg_spread = calc.get_average_spread()
     assert avg_spread is not None
-    assert avg_spread == 0.0002
+    assert avg_spread == pytest.approx(0.0002)
 
 
 def test_spread_widening_detection(sample_ticks):
@@ -84,7 +84,7 @@ def test_spread_widening_detection(sample_ticks):
     calc.add_tick(wide_tick)
     
     is_widening = calc.detect_spread_widening(threshold_multiplier=2.0)
-    assert is_widening is True
+    assert is_widening
 
 
 def test_spread_metrics(sample_ticks):

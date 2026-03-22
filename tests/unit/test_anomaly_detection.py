@@ -26,7 +26,7 @@ def test_zscore_detection():
     # Add anomalous value
     result = detector.detect_and_update(50.0)
     
-    assert result['is_anomaly'] is True
+    assert result['is_anomaly']
     assert result['zscore'] is not None
 
 

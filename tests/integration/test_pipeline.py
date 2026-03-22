@@ -137,7 +137,7 @@ class TestMetricsCalculation:
         )
         
         # Verify spread
-        assert tick.spread == 0.0002
+        assert tick.spread == pytest.approx(0.0002)
         
         # Verify mid price
         assert tick.mid_price == 1.0851
