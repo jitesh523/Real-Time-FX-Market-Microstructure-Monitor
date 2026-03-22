@@ -1,22 +1,23 @@
 """Optimized ClickHouse client with connection pooling and query optimization."""
 
-from typing import List, Dict, Optional
 from datetime import datetime, timedelta
+from functools import lru_cache
+from typing import Dict, List, Optional
+
 import clickhouse_connect
 from loguru import logger
-from functools import lru_cache
 
 from config import settings
-from src.models import TickData, OrderBook, Trade, MarketMetrics
+from src.models import MarketMetrics, OrderBook, TickData, Trade
 
 
 class OptimizedClickHouseClient:
     """Optimized ClickHouse client with connection pooling and caching."""
-    
+
     def __init__(self, pool_size: int = 5):
         """
         Initialize optimized ClickHouse client.
-        
+
         Args:
             pool_size: Number of connections in the pool
         """
@@ -28,27 +29,27 @@ class OptimizedClickHouseClient:
             password=settings.clickhouse_password,
             database=settings.clickhouse_database,
             connect_timeout=10,
-            send_receive_timeout=30
+            send_receive_timeout=30,
         )
-        
+
         # Batch buffers for bulk inserts
         self.tick_buffer = []
         self.orderbook_buffer = []
         self.metrics_buffer = []
         self.buffer_size = 100
-        
+
         logger.info(f"Initialized Optimized ClickHouse Client (pool_size={pool_size})")
-    
+
     def insert_tick_batch(self, ticks: List[TickData]):
         """
         Insert ticks in batch (optimized).
-        
+
         Args:
             ticks: List of tick data
         """
         if not ticks:
             return
-        
+
         # Prepare data as list of tuples for faster insertion
         data = [
             (
@@ -60,55 +61,62 @@ class OptimizedClickHouseClient:
                 tick.ask_size,
                 tick.mid_price,
                 tick.spread,
-                tick.spread_bps
+                tick.spread_bps,
             )
             for tick in ticks
         ]
-        
+
         self.client.insert(
-            'ticks',
+            "ticks",
             data,
             column_names=[
-                'timestamp', 'symbol', 'bid', 'ask', 'bid_size', 'ask_size',
-                'mid_price', 'spread', 'spread_bps'
-            ]
+                "timestamp",
+                "symbol",
+                "bid",
+                "ask",
+                "bid_size",
+                "ask_size",
+                "mid_price",
+                "spread",
+                "spread_bps",
+            ],
         )
-        
+
         logger.debug(f"Inserted {len(ticks)} ticks in batch")
-    
+
     def insert_tick_buffered(self, tick: TickData):
         """
         Insert tick with buffering for automatic batching.
-        
+
         Args:
             tick: Tick data
         """
         self.tick_buffer.append(tick)
-        
+
         if len(self.tick_buffer) >= self.buffer_size:
             self.flush_tick_buffer()
-    
+
     def flush_tick_buffer(self):
         """Flush tick buffer to database."""
         if self.tick_buffer:
             self.insert_tick_batch(self.tick_buffer)
             self.tick_buffer.clear()
-    
+
     @lru_cache(maxsize=128)
     def get_recent_ticks_cached(self, symbol: str, minutes: int, limit: int) -> tuple:
         """
         Get recent ticks with caching.
-        
+
         Args:
             symbol: Currency pair
             minutes: Number of minutes
             limit: Maximum ticks
-        
+
         Returns:
             Tuple of tick data (for caching)
         """
         cutoff_time = datetime.now() - timedelta(minutes=minutes)
-        
+
         # Optimized query with PREWHERE for better performance
         query = f"""
             SELECT
@@ -127,28 +135,29 @@ class OptimizedClickHouseClient:
             ORDER BY timestamp DESC
             LIMIT {limit}
         """
-        
+
         result = self.client.query(query)
         return tuple(result.result_rows)
-    
-    def get_aggregated_metrics(self, symbol: str, interval: str = '1m',
-                               minutes: int = 60) -> List[Dict]:
+
+    def get_aggregated_metrics(
+        self, symbol: str, interval: str = "1m", minutes: int = 60
+    ) -> List[Dict]:
         """
         Get pre-aggregated metrics using materialized views.
-        
+
         Args:
             symbol: Currency pair
             interval: Aggregation interval ('1s' or '1m')
             minutes: Time range in minutes
-        
+
         Returns:
             List of aggregated metrics
         """
         cutoff_time = datetime.now() - timedelta(minutes=minutes)
-        
+
         # Use materialized view for better performance
-        table = 'metrics_1m' if interval == '1m' else 'metrics_1s'
-        
+        table = "metrics_1m" if interval == "1m" else "metrics_1s"
+
         query = f"""
             SELECT
                 timestamp,
@@ -163,40 +172,47 @@ class OptimizedClickHouseClient:
               AND timestamp >= '{cutoff_time.strftime('%Y-%m-%d %H:%M:%S')}'
             ORDER BY timestamp ASC
         """
-        
+
         result = self.client.query(query)
-        
-        columns = ['timestamp', 'symbol', 'avg_spread', 'avg_spread_bps',
-                  'max_spread', 'min_spread', 'tick_count']
-        
+
+        columns = [
+            "timestamp",
+            "symbol",
+            "avg_spread",
+            "avg_spread_bps",
+            "max_spread",
+            "min_spread",
+            "tick_count",
+        ]
+
         return [dict(zip(columns, row)) for row in result.result_rows]
-    
+
     def execute_optimized_query(self, query: str, use_cache: bool = False) -> List:
         """
         Execute query with optimizations.
-        
+
         Args:
             query: SQL query
             use_cache: Whether to use query result cache
-        
+
         Returns:
             Query results
         """
         if use_cache:
             # Add SETTINGS for query result caching
             query += " SETTINGS use_query_cache = 1"
-        
+
         result = self.client.query(query)
         return result.result_rows
-    
+
     def get_statistics(self) -> Dict:
         """Get client statistics."""
         return {
-            'tick_buffer_size': len(self.tick_buffer),
-            'orderbook_buffer_size': len(self.orderbook_buffer),
-            'metrics_buffer_size': len(self.metrics_buffer)
+            "tick_buffer_size": len(self.tick_buffer),
+            "orderbook_buffer_size": len(self.orderbook_buffer),
+            "metrics_buffer_size": len(self.metrics_buffer),
         }
-    
+
     def close(self):
         """Close connection and flush buffers."""
         self.flush_tick_buffer()

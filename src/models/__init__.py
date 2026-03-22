@@ -1,17 +1,11 @@
 """Models package."""
 
 from src.models.tick_data import (
-    TickData,
+    MarketMetrics,
     OrderBook,
     OrderBookLevel,
+    TickData,
     Trade,
-    MarketMetrics
 )
 
-__all__ = [
-    "TickData",
-    "OrderBook",
-    "OrderBookLevel",
-    "Trade",
-    "MarketMetrics"
-]
+__all__ = ["TickData", "OrderBook", "OrderBookLevel", "Trade", "MarketMetrics"]

@@ -6,7 +6,7 @@ from src.alerts.alert_system import (
     AlertRuleEngine,
     AlertSeverity,
     AlertType,
-    get_alert_manager
+    get_alert_manager,
 )
 
 __all__ = [
@@ -15,5 +15,5 @@ __all__ = [
     "AlertRuleEngine",
     "AlertSeverity",
     "AlertType",
-    "get_alert_manager"
+    "get_alert_manager",
 ]
