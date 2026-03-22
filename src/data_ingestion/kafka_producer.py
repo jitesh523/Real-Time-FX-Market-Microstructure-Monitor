@@ -134,7 +134,11 @@ class KafkaTickProducer:
         try:
             while time.time() - start_time < duration_seconds:
                 # Generate ticks for all currency pairs
-                pairs = settings.currency_pairs_list if settings else ["EUR/USD", "GBP/USD", "USD/JPY", "AUD/USD"]
+                pairs = (
+                    settings.currency_pairs_list
+                    if settings
+                    else ["EUR/USD", "GBP/USD", "USD/JPY", "AUD/USD"]
+                )
                 for symbol in pairs:
                     tick = self.simulator.generate_tick(symbol)
                     self.send_tick(tick)
