@@ -6,10 +6,23 @@ import time
 from datetime import datetime
 from typing import Dict
 
-from kafka import KafkaProducer
-from loguru import logger
+try:
+    from kafka import KafkaProducer
+except ImportError:
+    KafkaProducer = None  # type: ignore[assignment, misc]
 
-from config import settings
+try:
+    from loguru import logger
+except ImportError:
+    import logging
+
+    logger = logging.getLogger(__name__)  # type: ignore[assignment]
+
+try:
+    from config import settings
+except ImportError:
+    settings = None  # type: ignore[assignment]
+
 from src.models import OrderBook, OrderBookLevel, TickData
 
 
@@ -121,7 +134,8 @@ class KafkaTickProducer:
         try:
             while time.time() - start_time < duration_seconds:
                 # Generate ticks for all currency pairs
-                for symbol in settings.currency_pairs_list:
+                pairs = settings.currency_pairs_list if settings else ["EUR/USD", "GBP/USD", "USD/JPY", "AUD/USD"]
+                for symbol in pairs:
                     tick = self.simulator.generate_tick(symbol)
                     self.send_tick(tick)
                     tick_count += 1
