@@ -201,9 +201,9 @@ Built following best practices in:
 - Anomaly detection in financial markets
 - Production-grade system design
 
-## 📧 Contact
 
-For questions or support, please open an issue on GitHub.
+
+
 
 ---
 
