@@ -2,21 +2,21 @@
 
 from src.anomaly_detection.half_space_trees import (
     HalfSpaceTreeDetector,
-    MultiFeatureAnomalyDetector
-)
-from src.anomaly_detection.zscore_detector import (
-    ZScoreDetector,
-    MultiVariateZScoreDetector
+    MultiFeatureAnomalyDetector,
 )
 from src.anomaly_detection.quote_stuffing import (
+    AdaptiveQuoteStuffingDetector,
     QuoteStuffingDetector,
-    AdaptiveQuoteStuffingDetector
-)
-from src.anomaly_detection.wash_trading import (
-    WashTradingDetector,
-    VolumeBasedWashDetector
 )
 from src.anomaly_detection.spoofing_detector import SpoofingDetector
+from src.anomaly_detection.wash_trading import (
+    VolumeBasedWashDetector,
+    WashTradingDetector,
+)
+from src.anomaly_detection.zscore_detector import (
+    MultiVariateZScoreDetector,
+    ZScoreDetector,
+)
 
 __all__ = [
     "HalfSpaceTreeDetector",
@@ -27,5 +27,5 @@ __all__ = [
     "AdaptiveQuoteStuffingDetector",
     "WashTradingDetector",
     "VolumeBasedWashDetector",
-    "SpoofingDetector"
+    "SpoofingDetector",
 ]
