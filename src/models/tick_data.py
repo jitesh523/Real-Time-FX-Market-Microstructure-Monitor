@@ -51,12 +51,12 @@ class OrderBook(BaseModel):
     @property
     def bid_depth(self) -> float:
         """Total volume on bid side."""
-        return sum(level.size for level in self.bids)
+        return sum(level.size for level in self.bids)  # pylint: disable=not-an-iterable
 
     @property
     def ask_depth(self) -> float:
         """Total volume on ask side."""
-        return sum(level.size for level in self.asks)
+        return sum(level.size for level in self.asks)  # pylint: disable=not-an-iterable
 
     @property
     def total_depth(self) -> float:
