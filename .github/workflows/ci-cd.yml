@@ -106,14 +106,14 @@ jobs:
       run: docker build -t fx-monitor:${{ github.sha }} .
     
     - name: Log in to Docker Hub
-      if: github.ref == 'refs/heads/main'
+      if: github.ref == 'refs/heads/main' && secrets.DOCKER_USERNAME != ''
       uses: docker/login-action@v3
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
     
     - name: Push to Docker Hub
-      if: github.ref == 'refs/heads/main'
+      if: github.ref == 'refs/heads/main' && secrets.DOCKER_USERNAME != ''
       run: |
         docker tag fx-monitor:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/fx-monitor:latest
         docker tag fx-monitor:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/fx-monitor:${{ github.sha }}
