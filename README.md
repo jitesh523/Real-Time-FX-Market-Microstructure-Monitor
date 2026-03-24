@@ -2,7 +2,6 @@
 
 [![CI/CD](https://github.com/jitesh523/Real-Time-FX-Market-Microstructure-Monitor/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/jitesh523/Real-Time-FX-Market-Microstructure-Monitor/actions)
 [![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 A production-ready real-time monitoring system for FX market microstructure, detecting anomalies and providing insights into market behavior.
@@ -188,10 +187,6 @@ kubectl port-forward svc/dashboard 8501:80 -n fx-monitor
 ## 🤝 Contributing
 
 Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
-
-## 📄 License
-
-This project is licensed under the MIT License - see [LICENSE](LICENSE) file.
 
 ## 🙏 Acknowledgments
 
