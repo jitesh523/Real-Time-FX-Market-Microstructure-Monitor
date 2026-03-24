@@ -1,7 +1,7 @@
 """Data models for FX market data."""
 
 from datetime import datetime
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 
 from pydantic import BaseModel, Field
 
@@ -45,18 +45,18 @@ class OrderBook(BaseModel):
 
     timestamp: datetime = Field(description="Time of the order book snapshot")
     symbol: str = Field(description="Currency pair")
-    bids: list[OrderBookLevel] = Field(description="Bid side of the order book")
-    asks: list[OrderBookLevel] = Field(description="Ask side of the order book")
+    bids: List[OrderBookLevel] = Field(description="Bid side of the order book")
+    asks: List[OrderBookLevel] = Field(description="Ask side of the order book")
 
     @property
     def bid_depth(self) -> float:
         """Total volume on bid side."""
-        return sum(level.size for level in self.bids)
+        return sum(level.size for level in self.bids)  # pylint: disable=not-an-iterable
 
     @property
     def ask_depth(self) -> float:
         """Total volume on ask side."""
-        return sum(level.size for level in self.asks)
+        return sum(level.size for level in self.asks)  # pylint: disable=not-an-iterable
 
     @property
     def total_depth(self) -> float:
