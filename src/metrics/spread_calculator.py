@@ -48,7 +48,7 @@ class SpreadCalculator:
             return None
 
         spreads = [tick.spread for tick in self.tick_history]
-        return np.mean(spreads)
+        return np.mean(spreads).item()
 
     def get_average_spread_bps(self) -> Optional[float]:
         """Calculate average spread in basis points over the window."""
@@ -56,7 +56,7 @@ class SpreadCalculator:
             return None
 
         spread_bps = [tick.spread_bps for tick in self.tick_history]
-        return np.mean(spread_bps)
+        return np.mean(spread_bps).item()
 
     def get_spread_volatility(self) -> Optional[float]:
         """Calculate spread volatility (standard deviation)."""
@@ -64,7 +64,7 @@ class SpreadCalculator:
             return None
 
         spreads = [tick.spread for tick in self.tick_history]
-        return np.std(spreads)
+        return np.std(spreads).item()
 
     def get_relative_spread(self) -> Optional[float]:
         """
@@ -132,7 +132,7 @@ class SpreadCalculator:
             return None
 
         spreads = [tick.spread for tick in self.tick_history]
-        return np.percentile(spreads, percentile)
+        return np.percentile(spreads, percentile).item()
 
     def detect_spread_widening(self, threshold_multiplier: float = 2.0) -> bool:
         """
