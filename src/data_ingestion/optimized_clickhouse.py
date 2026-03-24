@@ -2,7 +2,7 @@
 
 from datetime import datetime, timedelta
 from functools import lru_cache
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional, Sequence
 
 import clickhouse_connect
 from loguru import logger
@@ -187,7 +187,9 @@ class OptimizedClickHouseClient:
 
         return [dict(zip(columns, row)) for row in result.result_rows]
 
-    def execute_optimized_query(self, query: str, use_cache: bool = False) -> List:
+    def execute_optimized_query(
+        self, query: str, use_cache: bool = False
+    ) -> Sequence[Sequence[Any]]:
         """
         Execute query with optimizations.
 

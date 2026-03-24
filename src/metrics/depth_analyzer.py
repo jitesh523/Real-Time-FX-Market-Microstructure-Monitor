@@ -245,7 +245,7 @@ class DepthAnalyzer:
 
         # Calculate historical depth percentile
         historical_depths = [ob.total_depth for ob in self.orderbook_history[:-1]]
-        threshold = np.percentile(historical_depths, threshold_percentile)
+        threshold = np.percentile(historical_depths, threshold_percentile).item()
 
         return current_total < threshold
 

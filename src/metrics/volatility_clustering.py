@@ -66,7 +66,7 @@ class VolatilityAnalyzer:
             periods_per_year = 252 * 24 * 60 * 60 * 10  # Assuming ~10 ticks per second
             volatility *= np.sqrt(periods_per_year)
 
-        return volatility
+        return volatility.item()
 
     def get_ewma_volatility(self, lambda_param: float = 0.94) -> Optional[float]:
         """
@@ -140,7 +140,7 @@ class VolatilityAnalyzer:
 
         z_score = (recent_vol - avg_vol) / std_vol
 
-        return z_score > threshold
+        return (z_score > threshold).item()
 
     def get_volatility_regime(self) -> Optional[str]:
         """

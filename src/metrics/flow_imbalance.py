@@ -211,7 +211,7 @@ class FlowImbalanceCalculator:
             return None
 
         # VPIN is the average absolute imbalance divided by volume per bucket
-        vpin = np.mean(imbalances) / volume_per_bucket
+        vpin = (np.mean(imbalances) / volume_per_bucket).item()
 
         return vpin
 
