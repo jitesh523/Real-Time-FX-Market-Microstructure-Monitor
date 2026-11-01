@@ -20,6 +20,7 @@ class LeeReadyClassifier:
     def __init__(self):
         """Initialize Lee-Ready classifier."""
         self.previous_trade_price = None
+        self.previous_classification: Optional[str] = None
         self.buy_initiated_count = 0
         self.sell_initiated_count = 0
 
@@ -52,8 +53,9 @@ class LeeReadyClassifier:
             # At mid-quote, use tick test
             classification = self._tick_test(trade_price)
 
-        # Update previous price
+        # Retain history for the next tick test.
         self.previous_trade_price = trade_price
+        self.previous_classification = classification
 
         return {
             "trade_id": trade.trade_id,
@@ -90,8 +92,12 @@ class LeeReadyClassifier:
         else:
             # Zero tick, use previous classification
             # Default to buy if no history
-            self.buy_initiated_count += 1
-            return "buy"
+            classification = self.previous_classification or "buy"
+            if classification == "buy":
+                self.buy_initiated_count += 1
+            else:
+                self.sell_initiated_count += 1
+            return classification
 
     def get_statistics(self) -> dict:
         """Get classification statistics."""
